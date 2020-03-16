@@ -22,20 +22,41 @@ def cleanse_data(**kwargs):
     inexperienced = [i for i in players if i['experience'] == 'NO']
     total_experienced = len(experienced)
     total_inexperienced = len(inexperienced)
+    max_experienced = total_experienced // total_teams
 
     list_of_teams = {team: [] for team in teams}
-    r = random.randint(0, len(players) - 1)
-    print(list(players)[r])
-    print(random.choice(players))
 
+    for p in players.copy():
+        r = random.choice(players)
+        if (r not in list_of_teams['Panthers'] and 
+            len(list_of_teams['Panthers']) < num_of_players):
+            list_of_teams['Panthers'].append(r)
+            players.remove(r)
+        elif (r not in list_of_teams['Bandits'] and 
+            len(list_of_teams['Bandits']) < num_of_players):
+            list_of_teams['Bandits'].append(r)
+            players.remove(r)
+        elif (r not in list_of_teams['Warriors'] and 
+            len(list_of_teams['Warriors']) < num_of_players):
+            list_of_teams['Warriors'].append(r)
+            players.remove(r)
 
-    for p in players:
-        for k, v in p.items():
-            # if len(list_of_teams['Panthers']) < num_of_players:
-            list_of_teams['Panthers'].append({k: v})
+            
+    # print(list_of_teams['Panthers'], '\n')
+    # print(len(list_of_teams['Panthers']), '\n')
 
+    # print(list_of_teams['Bandits'], '\n')
+    # print(len(list_of_teams['Bandits']), '\n')
 
-    #print(list_of_teams)
+    # print(list_of_teams['Warriors'], '\n')
+    # print(len(list_of_teams['Warriors']), '\n')
+
+    panthers = list_of_teams['Panthers']
+    bandits = list_of_teams['Bandits']
+    warriors = list_of_teams['Warriors']
+    
+    return panthers, bandits, warriors
+
     # print(f'\nTeam: {teams[0]} Stats')
     # print('-' * 20)
     # print(f'Total players: {len(teams)}')  # Balance Teams
