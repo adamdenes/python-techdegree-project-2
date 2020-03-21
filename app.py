@@ -4,6 +4,7 @@ Project 2 - Basketball Stats Tool
 --------------------------------
 """
 
+import re
 import sys
 import random
 from stats import constants  # basketball-team-stats_v1
@@ -17,58 +18,87 @@ def cleanse_data(**kwargs):
     total_players = len(players)
     total_teams = len(teams)
     num_of_players = total_players // total_teams
-
     experienced = [e for e in players if e['experience'] == 'YES']
     inexperienced = [i for i in players if i['experience'] == 'NO']
     total_experienced = len(experienced)
     total_inexperienced = len(inexperienced)
     max_experienced = total_experienced // total_teams
-
+    max_inperienced = total_inexperienced // total_teams
     list_of_teams = {team: [] for team in teams}
-
-    for p in players.copy():
-        r = random.choice(players)
-        if (r not in list_of_teams['Panthers'] and 
-            len(list_of_teams['Panthers']) < num_of_players):
-            list_of_teams['Panthers'].append(r)
-            players.remove(r)
-        elif (r not in list_of_teams['Bandits'] and 
-            len(list_of_teams['Bandits']) < num_of_players):
-            list_of_teams['Bandits'].append(r)
-            players.remove(r)
-        elif (r not in list_of_teams['Warriors'] and 
-            len(list_of_teams['Warriors']) < num_of_players):
-            list_of_teams['Warriors'].append(r)
-            players.remove(r)
-
-            
-    # print(list_of_teams['Panthers'], '\n')
-    # print(len(list_of_teams['Panthers']), '\n')
-
-    # print(list_of_teams['Bandits'], '\n')
-    # print(len(list_of_teams['Bandits']), '\n')
-
-    # print(list_of_teams['Warriors'], '\n')
-    # print(len(list_of_teams['Warriors']), '\n')
 
     panthers = list_of_teams['Panthers']
     bandits = list_of_teams['Bandits']
     warriors = list_of_teams['Warriors']
+
+    for player in players.copy():
+        for key, value in player.items():
+            if key == 'guardians':
+                player[key] = value.split(' and ')
+
+    for l in list_of_teams.copy():
+        for player in players.copy():          
+            r = random.choice(players)
+            if (r not in list_of_teams[l] and
+                len(list_of_teams[l]) < num_of_players):
+                list_of_teams[l].append(r)
+                players.remove(r)
+
+    # print(len(panthers))
+    # print(panthers)
+    # print(len(bandits))
+    # print(bandits)
+    # print(len(warriors))
+    # print(warriors)
+
+    return list_of_teams
+
+cleaned_data = cleanse_data(players=constants.PLAYERS, teams=constants.TEAMS)
+
+
+def show_data(data, option):
+
+    # counter = 0
+    # for k, v in data.items():
+    #     for val in v:
+    #         counter += val['experience'].count('YES')
+
+    name = [k['name'] for k in data[option]]
+    guardian = [g for guardian in data[option] for g in guardian['guardians']]
+    height = [height['height'] for height in data[option]]
+    sum_height = [re.sub(r'\s\w+', '', h) for h in height]
     
-    return panthers, bandits, warriors
+    summ = 0
+    for s in sum_height:
+        summ += int(s)
 
-    # print(f'\nTeam: {teams[0]} Stats')
-    # print('-' * 20)
-    # print(f'Total players: {len(teams)}')  # Balance Teams
-    # print(f'Players on Team:\n ')
+    experience = 0
+    inexperience = 0
+    for exp in data[option]:
+        if exp['experience'] == 'YES':
+            experience += exp['experience'].count('YES')
+        else:
+            inexperience += exp['experience'].count('NO')
 
-cleanse_data(players=constants.PLAYERS, teams=constants.TEAMS)
+    # while experience:
+    #     if experience != (counter // len(data.keys())):
+    #         cleanse_data(players=constants.PLAYERS, teams=constants.TEAMS)
+    #     else:
+    #         break
+
+
+    print('\nTeam: {} Stats'.format(option))
+    print('-' * 20)
+    print('Total players: {}'.format(len(data[option])))
+    print('Number of inexperienced players: {}'.format(inexperience))
+    print('Number of experienced players: {}'.format(experience))
+    print('Average height of the team: {}'.format(summ))
+    print('\nPlayers on Team:\n- {}'.format(', '.join(name)))
+    print('\nGuardians of Players:\n- {}'.format(', '.join(guardian)))
 
 
 def get_teams(*args):
     """
     Converting TEAMS list into a dictionary
-    making sure the list of the teams can grow in the future
 
     TEAMS = (['Panthers', 'Bandits', 'Warriors'],)
     teams = {1: 'Panthers', 2: 'Bandits', 3: 'Warriors'}
@@ -79,19 +109,19 @@ def get_teams(*args):
     for key, value in teams.items():
         print(f'  {key}) {value}')
 
-    team_option: int = int(input('\n Enter an option > '))
+    team_option: int = int(input('\n Enter a *Teams* option > '))
 
     if team_option == 1:
-        pass
+        show_data(cleaned_data, 'Panthers')
     elif team_option == 2:
-        pass
+        show_data(cleaned_data, 'Bandits')
     elif team_option == 3:
-        pass
+        show_data(cleaned_data, 'Warriors')
 
 
 def display_stats():
     """
-    DOCSTRINGS
+    DOCSTRINGS TBC
     """
 
     app_title = 'BASKETBALL TEAM STATS TOOL'
@@ -111,7 +141,7 @@ def display_stats():
     try:
         while menu:
 
-            option: int = input('\n Enter an option > ')
+            option: int = input('\n Enter a *Menu* option > ')
             try:
                 option = int(option)
                 if option == 1:
@@ -123,8 +153,8 @@ def display_stats():
                     print(f'Specified value "{option}" is not in the list! Try again...')
                     continue
             except ValueError:
-                print(f'Please enter an integer! => "{option}" is invalid.')
-               
+                print(f'Please enter an integer! -> "{option}" is invalid.')
+
     except KeyboardInterrupt:
         print('\nExiting... CTRL+C')
         sys.exit()
@@ -132,3 +162,4 @@ def display_stats():
 
 if __name__ == '__main__':
     display_stats()
+    
