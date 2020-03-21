@@ -100,12 +100,17 @@ def get_teams(*args):
 
     team_option: int = int(input('\n Enter a *Teams* option > '))
 
-    if team_option == 1:
-        show_data(cleaned_data, 'Panthers')
-    elif team_option == 2:
-        show_data(cleaned_data, 'Bandits')
-    elif team_option == 3:
-        show_data(cleaned_data, 'Warriors')
+    try:
+        if team_option == 1:
+            show_data(cleaned_data, 'Panthers')
+        elif team_option == 2:
+            show_data(cleaned_data, 'Bandits')
+        elif team_option == 3:
+            show_data(cleaned_data, 'Warriors')
+        else:
+            raise ValueError('Please use the presented options!')
+    except ValueError as ve:
+        print(ve)
 
 
 def display_stats():
@@ -142,7 +147,7 @@ def display_stats():
                     print(f'Specified value "{option}" is not in the list! Try again...')
                     continue
             except ValueError:
-                print(f'Please enter an integer! -> "{option}" is invalid.')
+                print(f'Please enter an integer!')
 
     except KeyboardInterrupt:
         print('\nExiting... CTRL+C')
