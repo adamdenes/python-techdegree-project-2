@@ -60,9 +60,7 @@ def show_data(data, option):
     name = [k['name'] for k in data[option]]
     guardian = [g for guardian in data[option] for g in guardian['guardians']]
     height = [h['height'] for h in data[option]]
-    print(height)
-    # sum_height = [re.sub(r'\s\w+', '', h) for h in height]
-    
+
     summ = 0
     for s in height:
         summ += s
