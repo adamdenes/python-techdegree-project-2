@@ -18,12 +18,6 @@ def cleanse_data(**kwargs):
     total_players = len(players)
     total_teams = len(teams)
     num_of_players = total_players // total_teams
-    experienced = [e for e in players if e['experience'] == 'YES']
-    inexperienced = [i for i in players if i['experience'] == 'NO']
-    total_experienced = len(experienced)
-    total_inexperienced = len(inexperienced)
-    max_experienced = total_experienced // total_teams
-    max_inperienced = total_inexperienced // total_teams
     list_of_teams = {team: [] for team in teams}
 
     panthers = list_of_teams['Panthers']
@@ -34,6 +28,12 @@ def cleanse_data(**kwargs):
         for key, value in player.items():
             if key == 'guardians':
                 player[key] = value.split(' and ')
+            elif key == 'experience' and value == 'YES':
+                player[key] = True
+            elif key == 'experience' and value == 'NO':
+                player[key] = False
+            elif key == 'height':
+                player[key] = int(re.sub(r'\s\w+', '', value))
 
     for l in list_of_teams.copy():
         for player in players.copy():          
@@ -57,34 +57,23 @@ cleaned_data = cleanse_data(players=constants.PLAYERS, teams=constants.TEAMS)
 
 def show_data(data, option):
 
-    # counter = 0
-    # for k, v in data.items():
-    #     for val in v:
-    #         counter += val['experience'].count('YES')
-
     name = [k['name'] for k in data[option]]
     guardian = [g for guardian in data[option] for g in guardian['guardians']]
-    height = [height['height'] for height in data[option]]
-    sum_height = [re.sub(r'\s\w+', '', h) for h in height]
+    height = [h['height'] for h in data[option]]
+    print(height)
+    # sum_height = [re.sub(r'\s\w+', '', h) for h in height]
     
     summ = 0
-    for s in sum_height:
-        summ += int(s)
+    for s in height:
+        summ += s
 
     experience = 0
     inexperience = 0
     for exp in data[option]:
-        if exp['experience'] == 'YES':
-            experience += exp['experience'].count('YES')
+        if exp['experience'] == True:
+            experience += 1
         else:
-            inexperience += exp['experience'].count('NO')
-
-    # while experience:
-    #     if experience != (counter // len(data.keys())):
-    #         cleanse_data(players=constants.PLAYERS, teams=constants.TEAMS)
-    #     else:
-    #         break
-
+            inexperience += 1
 
     print('\nTeam: {} Stats'.format(option))
     print('-' * 20)
