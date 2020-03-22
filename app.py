@@ -94,6 +94,8 @@ def show_data(data, option):
     for s in height:
         summ += s
 
+    average_height = summ / len(data[option])
+
     experience = 0
     inexperience = 0
     for exp in data[option]:
@@ -107,7 +109,7 @@ def show_data(data, option):
     print('Total players: {}'.format(len(data[option])))
     print('Number of inexperienced players: {}'.format(inexperience))
     print('Number of experienced players: {}'.format(experience))
-    print('Average height of the team: {}'.format(summ))
+    print('Average height of the team: {0:.2f}'.format(average_height))
     print('\nPlayers on Team:\n- {}'.format(', '.join(name)))
     print('\nGuardians of Players:\n- {}'.format(', '.join(guardian)))
 
