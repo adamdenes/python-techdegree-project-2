@@ -7,11 +7,18 @@ Project 2 - Basketball Stats Tool
 import re
 import sys
 import random
-from stats import constants  # basketball-team-stats_v1
+from stats import constants
 from typing import List, Dict
 
 
 def cleanse_data(**kwargs):
+    """
+    Cleanse_data will take two variable arguments and return a cleansed dict
+        - guardians field will only contain list of names
+        - experience will be turned into a boolean
+        - height will only contain numbers
+        - teams will be balanced based on experienced and inexperienced players
+    """
 
     players = kwargs['players']
     teams = kwargs['teams']
@@ -19,10 +26,8 @@ def cleanse_data(**kwargs):
     total_teams = len(teams)
     num_of_players = total_players // total_teams
     list_of_teams = {team: [] for team in teams}
-
-    panthers = list_of_teams['Panthers']
-    bandits = list_of_teams['Bandits']
-    warriors = list_of_teams['Warriors']
+    players_with_experience = []
+    players_without_experience = []
 
     for player in players.copy():
         for key, value in player.items():
@@ -30,25 +35,32 @@ def cleanse_data(**kwargs):
                 player[key] = value.split(' and ')
             elif key == 'experience' and value == 'YES':
                 player[key] = True
+                players_with_experience.append(player)
             elif key == 'experience' and value == 'NO':
                 player[key] = False
+                players_without_experience.append(player)
             elif key == 'height':
                 player[key] = int(re.sub(r'\s\w+', '', value))
 
-    for l in list_of_teams.copy():
-        for player in players.copy():          
-            r = random.choice(players)
-            if (r not in list_of_teams[l] and
-                len(list_of_teams[l]) < num_of_players):
-                list_of_teams[l].append(r)
-                players.remove(r)
+    exp_per_team = len(players_with_experience) // total_teams
+    inexp_per_team = len(players_without_experience) // total_teams
 
-    # print(len(panthers))
-    # print(panthers)
-    # print(len(bandits))
-    # print(bandits)
-    # print(len(warriors))
-    # print(warriors)
+    for name, val in list_of_teams.items():
+        experienced_players = 0
+        inexperienced_players = 0
+
+        for player in players.copy():          
+            rand_player = random.choice(players)
+
+            if rand_player['experience'] == True and experienced_players < 3 and len(list_of_teams[name]) < num_of_players:
+                experienced_players += 1
+                list_of_teams[name].append(rand_player)
+                players.remove(rand_player)
+
+            elif rand_player['experience'] == False and inexperienced_players < 3 and len(list_of_teams[name]) < num_of_players:
+                inexperienced_players += 1 
+                list_of_teams[name].append(rand_player)
+                players.remove(rand_player)
 
     return list_of_teams
 
@@ -56,7 +68,24 @@ cleaned_data = cleanse_data(players=constants.PLAYERS, teams=constants.TEAMS)
 
 
 def show_data(data, option):
+    """
+    Generate the output data that will be showed if one of the teams is selected
 
+    EXAMPLE RESULT::
+
+    Team: Panthers Stats
+    --------------------
+    Total players: 6
+    Number of inexperienced players: 3
+    Number of experienced players: 3
+    Average height of the team: 253
+
+    Players on Team:
+    - Suzane Greenberg, Phillip Helm, Kimmy Stein, Karl Saygan, Joe Kavalier, Arnold Willis
+
+    Guardians of Players:
+    - Henrietta Dumas, Thomas Helm, Eva Jones, Bill Stein, Hillary Stein, Heather Bledsoe, Sam Kavalier, Elaine Kavalier, Claire Willis
+    """
     name = [k['name'] for k in data[option]]
     guardian = [g for guardian in data[option] for g in guardian['guardians']]
     height = [h['height'] for h in data[option]]
@@ -113,7 +142,11 @@ def get_teams(*args):
 
 def display_stats():
     """
-    DOCSTRINGS TBC
+    Display_stats is the main function of the app
+    it will display the main menu and prompt the user for options
+    as long as the player does not quit (CTRL-C or 'Quit' option).
+
+    The app will handle invalid input data and react accordingly.
     """
 
     app_title = 'BASKETBALL TEAM STATS TOOL'
