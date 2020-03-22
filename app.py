@@ -8,7 +8,6 @@ import re
 import sys
 import random
 from stats import constants
-from typing import List, Dict
 
 
 def cleanse_data(**kwargs):
