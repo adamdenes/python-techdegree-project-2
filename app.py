@@ -106,11 +106,11 @@ def show_data(data, option):
     print('\nTeam: {} Stats'.format(option))
     print('-' * 20)
     print('Total players: {}'.format(len(data[option])))
-    print('Number of inexperienced players: {}'.format(inexperience))
     print('Number of experienced players: {}'.format(experience))
+    print('Number of inexperienced players: {}'.format(inexperience))
     print('Average height of the team: {0:.2f}'.format(average_height))
     print('\nPlayers on Team:\n- {}'.format(', '.join(name)))
-    print('\nGuardians of Players:\n- {}'.format(', '.join(guardian)))
+    print('\nGuardians of Players:\n- {}\n\n'.format(', '.join(guardian)))
 
 
 def get_teams(*args):
@@ -136,9 +136,22 @@ def get_teams(*args):
         elif team_option == 3:
             show_data(cleaned_data, 'Warriors')
         else:
-            raise ValueError('Please use the presented options!')
+            raise ValueError('Please use the presented options!\n\n')
     except ValueError as ve:
         print(ve)
+
+
+def show_menu():
+    
+    menu = {}
+    menu['1'] = 'Display Team Stats'
+    menu['2'] = 'Quit'
+
+    print('Here are your MENU choices:')
+
+    for key, value in menu.items():
+        print(f'  {key}) {value}')
+
 
 
 def display_stats():
@@ -155,31 +168,24 @@ def display_stats():
     print('-' * (len(app_title)+2) + '\n' + '|' + '' * (len(app_title)+2) + app_title + '|\n' + '-' * (len(app_title)+2) + '\n')
     print(f'---- {menu_header} ----\n')
 
-    menu = {}
-    menu['1'] = 'Display Team Stats'
-    menu['2'] = 'Quit'
-
-    print('Here are your choices:')
-
-    for key, value in menu.items():
-        print(f'  {key}) {value}')
-
     try:
-        while menu:
+        while menu_header:
+            show_menu()
 
             option: int = input('\n Enter a *Menu* option > ')
             try:
                 option = int(option)
                 if option == 1:
                     get_teams(constants.TEAMS)
+                    continue
                 elif option == 2:
                     print('\nClosing application...')
                     break
                 elif option < 1 or option > 2:
-                    print(f'Specified value "{option}" is not in the list! Try again...')
+                    print(f'Specified value "{option}" is not in the list! Try again...\n\n')
                     continue
             except ValueError:
-                print(f'Please enter an integer!')
+                print(f'Please enter an integer!\n\n')
 
     except KeyboardInterrupt:
         print('\nExiting... CTRL+C')
